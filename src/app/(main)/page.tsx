@@ -2,14 +2,10 @@
 
 import React from 'react';
 import Image from 'next/image';
-import ThemeToggle from '../components/ThemeToggle';
 
 const MainPage = () => {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-300 dark:from-slate-900 dark:to-gray-800 text-slate-900 dark:text-white px-6 relative">
-      {/* Add the ThemeToggle button here */}
-      <ThemeToggle />
-
       <div className="max-w-4xl w-full flex flex-col md:flex-row items-center gap-10">
         <div className="flex-shrink-0">
           <Image
@@ -27,10 +23,10 @@ const MainPage = () => {
             Hi, I'm <span className="text-teal-500 dark:text-teal-300">Lissa Mae P. Degamo</span>
           </h1>
           <h2 className="text-2xl md:text-3xl font-light text-gray-700 dark:text-gray-300">
-            Aspiring Web Designer & Frontend Developer
+            Software Engineer
           </h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-xl">
-            I craft modern, accessible, and responsive websites with clean code and pixel-perfect design. Let's build something amazing together.
+            Description here
           </p>
 
           <div className="flex gap-4 justify-center md:justify-start">
