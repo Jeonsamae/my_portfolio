@@ -303,11 +303,11 @@ export default function Home() {
             <motion.div
               animate={{ y: [0, -14, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="relative w-64 h-64 lg:w-80 lg:h-80"
+              className="relative w-64 h-64 lg:w-150 lg:h-150"
             >
               <div className="w-full h-full rounded-full overflow-hidden ring-2 ring-gray-200 dark:ring-white/10">
                 <Image
-                  src="/images/profile_pic.JPG"
+                  src="/images/profile_pic - Edited.png"
                   alt="Lissa Mae P. Degamo"
                   fill
                   className="object-cover"
