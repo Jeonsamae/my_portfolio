@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { useRef, useState, useCallback } from 'react';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import {
   SiNextdotjs,
@@ -22,6 +22,8 @@ import {
   FiExternalLink,
   FiDownload,
   FiArrowDown,
+  FiChevronLeft,
+  FiChevronRight,
 } from 'react-icons/fi';
 
 // ─── Animation Variants ──────────────────────────────────────────────────────
@@ -83,7 +85,7 @@ function SectionTitle({
     <div className="text-center mb-16">
       <motion.span
         variants={fadeUp}
-        className="inline-block text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase mb-3"
+        className="inline-block text-xs font-bold tracking-widest text-pink-500 dark:text-pink-400 uppercase mb-3"
       >
         {label}
       </motion.span>
@@ -103,7 +105,7 @@ function SectionTitle({
       )}
       <motion.div
         variants={fadeUp}
-        className="mt-5 mx-auto w-20 h-1 rounded-full bg-gradient-to-r from-teal-400 to-purple-500"
+        className="mt-5 mx-auto w-20 h-1 rounded-full bg-gradient-to-r from-pink-400 to-fuchsia-500"
       />
     </div>
   );
@@ -130,8 +132,8 @@ const projects = [
     description:
       'An intelligent retrieval-augmented generation system that enhances LLM responses with domain-specific knowledge using vector embeddings.',
     tech: ['Next.js', 'Python', 'PostgreSQL', 'AI/RAG'],
-    gradient: 'from-teal-500/20 to-cyan-500/20',
-    hoverBorder: 'hover:border-teal-500/40',
+    gradient: 'from-pink-500/20 to-rose-500/20',
+    accentColor: 'text-pink-500',
     github: '#',
     link: '#',
   },
@@ -140,8 +142,8 @@ const projects = [
     description:
       'A modern e-commerce platform with real-time inventory management, payment processing, and an intuitive admin dashboard.',
     tech: ['Next.js', 'Django', 'TypeScript', 'Redux'],
-    gradient: 'from-purple-500/20 to-pink-500/20',
-    hoverBorder: 'hover:border-purple-500/40',
+    gradient: 'from-fuchsia-500/20 to-pink-500/20',
+    accentColor: 'text-fuchsia-500',
     github: '#',
     link: '#',
   },
@@ -150,32 +152,189 @@ const projects = [
     description:
       'A collaborative project management tool with real-time updates, role-based access, and rich analytics dashboards.',
     tech: ['Next.js', 'Django', 'PostgreSQL', 'TypeScript'],
-    gradient: 'from-blue-500/20 to-indigo-500/20',
-    hoverBorder: 'hover:border-blue-500/40',
+    gradient: 'from-rose-500/20 to-fuchsia-500/20',
+    accentColor: 'text-rose-500',
     github: '#',
     link: '#',
   },
 ];
 
+// ─── Projects Carousel ────────────────────────────────────────────────────────
+
+function ProjectsCarousel() {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(1);
+
+  const goTo = useCallback(
+    (idx: number) => {
+      if (idx === current) return;
+      setDirection(idx > current ? 1 : -1);
+      setCurrent(idx);
+    },
+    [current]
+  );
+
+  const prev = () => goTo((current - 1 + projects.length) % projects.length);
+  const next = () => goTo((current + 1) % projects.length);
+
+  const slideVariants = {
+    enter: (d: number) => ({ x: d > 0 ? '55%' : '-55%', opacity: 0, scale: 0.96 }),
+    center: { x: 0, opacity: 1, scale: 1 },
+    exit: (d: number) => ({ x: d > 0 ? '-55%' : '55%', opacity: 0, scale: 0.96 }),
+  };
+
+  const project = projects[current];
+
+  return (
+    <div>
+      {/* Card */}
+      <div className="relative overflow-hidden rounded-3xl">
+        <AnimatePresence custom={direction} mode="wait">
+          <motion.div
+            key={current}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <div className="group flex flex-col lg:flex-row rounded-3xl overflow-hidden bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/10 shadow-sm dark:shadow-none min-h-[420px]">
+
+              {/* Visual panel */}
+              <div className={`lg:w-5/12 bg-gradient-to-br ${project.gradient} relative flex items-center justify-center overflow-hidden min-h-[220px] lg:min-h-0`}>
+                <span className="text-[clamp(6rem,14vw,11rem)] font-black text-gray-900/[0.06] dark:text-white/[0.05] select-none leading-none">
+                  {String(current + 1).padStart(2, '0')}
+                </span>
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-5 backdrop-blur-sm">
+                  <a
+                    href={project.github}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/15 hover:bg-white/30 text-white text-sm font-medium transition-all duration-200"
+                    aria-label="GitHub"
+                  >
+                    <FiGithub size={16} /> View Code
+                  </a>
+                  <a
+                    href={project.link}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-gray-900 text-sm font-semibold hover:bg-pink-50 transition-all duration-200"
+                    aria-label="Live demo"
+                  >
+                    <FiExternalLink size={16} /> Live Demo
+                  </a>
+                </div>
+              </div>
+
+              {/* Content panel */}
+              <div className="flex-1 flex flex-col p-8 lg:p-12">
+                <div className="flex items-center gap-3 mb-8">
+                  <span className={`text-xs font-bold tracking-widest uppercase ${project.accentColor}`}>
+                    Featured Project
+                  </span>
+                  <div className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+                  <span className="text-xs text-gray-400 dark:text-white/25 font-mono tabular-nums">
+                    {String(current + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+                  </span>
+                </div>
+
+                <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-4 group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors duration-200">
+                  {project.title}
+                </h3>
+
+                <p className="text-gray-500 dark:text-white/50 leading-relaxed flex-1 mb-8 text-base lg:text-lg">
+                  {project.description}
+                </p>
+
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {project.tech.map((t) => (
+                    <span
+                      key={t}
+                      className="px-3 py-1.5 text-xs font-mono bg-gray-100 border border-gray-200 text-gray-500 dark:bg-white/5 dark:border-white/10 dark:text-white/40 rounded-lg"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <a
+                    href={project.github}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-gray-200 dark:border-white/15 text-gray-600 dark:text-white/60 hover:border-pink-400 dark:hover:border-pink-500/40 hover:text-pink-600 dark:hover:text-pink-400 text-sm font-medium transition-all duration-200"
+                  >
+                    <FiGithub size={14} /> GitHub
+                  </a>
+                  <a
+                    href={project.link}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white text-sm font-semibold hover:shadow-lg hover:shadow-pink-500/25 hover:scale-105 transition-all duration-300"
+                  >
+                    <FiExternalLink size={14} /> Live Demo
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation bar */}
+      <div className="flex items-center justify-between mt-8">
+        {/* Pill dots */}
+        <div className="flex items-center gap-2">
+          {projects.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === current
+                  ? 'w-8 h-1.5 bg-gradient-to-r from-pink-500 to-fuchsia-500'
+                  : 'w-1.5 h-1.5 bg-gray-300 dark:bg-white/20 hover:bg-pink-400 dark:hover:bg-pink-400'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Arrow buttons */}
+        <div className="flex gap-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={prev}
+            className="p-3 rounded-full border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/50 hover:border-pink-400 dark:hover:border-pink-500/40 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200"
+          >
+            <FiChevronLeft size={18} />
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={next}
+            className="p-3 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-200"
+          >
+            <FiChevronRight size={18} />
+          </motion.button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Home() {
   return (
-    <main className="bg-gray-50 dark:bg-[#050505] min-h-screen overflow-x-hidden transition-colors duration-300">
+    <main className="bg-gray-50 dark:bg-[#080508] min-h-screen overflow-x-hidden transition-colors duration-300">
 
       {/* ════════════════════════════════════════ HERO */}
       <section
         id="home"
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        className="relative min-h-screen flex items-center overflow-hidden"
       >
-        {/* Background blobs */}
+        {/* Background */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 -left-40 w-[600px] h-[600px] bg-teal-400/10 dark:bg-teal-500/15 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -right-40 w-[600px] h-[600px] bg-purple-400/10 dark:bg-purple-500/15 rounded-full blur-3xl" />
-          <div className="absolute top-2/3 left-1/3 w-72 h-72 bg-cyan-400/8 dark:bg-cyan-500/10 rounded-full blur-3xl" />
+          <div className="absolute -top-20 right-0 w-[900px] h-[900px] bg-pink-400/8 dark:bg-pink-500/10 rounded-full blur-[140px]" />
+          <div className="absolute bottom-0 -left-20 w-[700px] h-[700px] bg-fuchsia-400/8 dark:bg-fuchsia-500/8 rounded-full blur-[120px]" />
           {/* Light mode grid */}
           <div
-            className="absolute inset-0 opacity-[0.05] dark:hidden"
+            className="absolute inset-0 opacity-[0.04] dark:hidden"
             style={{
               backgroundImage:
                 'linear-gradient(rgba(0,0,0,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,1) 1px, transparent 1px)',
@@ -194,128 +353,158 @@ export default function Home() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-16 flex flex-col lg:flex-row items-center gap-16 lg:gap-24 w-full">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-28 pb-20 w-full">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
 
-          {/* Left: Text */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-            className="flex-1 text-center lg:text-left"
-          >
+            {/* Left: Text */}
             <motion.div
-              variants={fadeUp}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-600 dark:text-teal-400 text-sm font-medium mb-8"
+              initial="hidden"
+              animate="visible"
+              variants={stagger}
+              className="flex-1 min-w-0 text-center lg:text-left"
             >
-              <span className="w-1.5 h-1.5 bg-teal-500 dark:bg-teal-400 rounded-full animate-pulse" />
-              Open to opportunities
-            </motion.div>
+              {/* Badge */}
+              <motion.div
+                variants={fadeUp}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-600 dark:text-pink-400 text-sm font-medium mb-8"
+              >
+                <span className="w-1.5 h-1.5 bg-pink-500 dark:bg-pink-400 rounded-full animate-pulse" />
+                Open to opportunities
+              </motion.div>
 
-            <motion.h1
-              variants={fadeUp}
-              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 text-gray-900 dark:text-white"
-            >
-              Hi, I&apos;m{' '}
-              <br className="lg:hidden" />
-              <span className="bg-gradient-to-r from-teal-500 via-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                Lissa Mae
-              </span>
-            </motion.h1>
-
-            <motion.p
-              variants={fadeUp}
-              className="text-lg lg:text-xl text-gray-500 dark:text-white/50 font-medium mb-6"
-            >
-              Software Engineer&nbsp;
-              <span className="text-gray-300 dark:text-white/20">·</span>&nbsp;
-              Full-Stack Developer&nbsp;
-              <span className="text-gray-300 dark:text-white/20">·</span>&nbsp;
-              UI/UX Designer
-            </motion.p>
-
-            <motion.p
-              variants={fadeUp}
-              className="text-gray-500 dark:text-white/40 text-base lg:text-lg max-w-lg mb-10 leading-relaxed"
-            >
-              I build scalable web applications with modern technologies.
-              Passionate about clean code, great UX, and AI-powered solutions.
-            </motion.p>
-
-            {/* Tech tags */}
-            <motion.div
-              variants={fadeUp}
-              className="flex flex-wrap gap-2 justify-center lg:justify-start mb-10"
-            >
-              {['Next.js', 'Django', 'TypeScript', 'Redux', 'PostgreSQL', 'AI/RAG'].map(
-                (tech) => (
-                  <span
-                    key={tech}
-                    className="px-3 py-1 text-xs font-mono bg-gray-200/80 border border-gray-300 text-gray-600 dark:bg-white/5 dark:border-white/10 dark:text-white/50 hover:border-teal-500/50 hover:text-teal-600 dark:hover:text-teal-400 rounded-md transition-all duration-200 cursor-default"
-                  >
-                    {tech}
+              {/* Name */}
+              <motion.div variants={fadeUp} className="mb-6">
+                <p className="text-xs font-mono text-gray-400 dark:text-white/25 tracking-[0.25em] uppercase mb-3">
+                  Hi there, I&apos;m
+                </p>
+                <h1 className="text-[clamp(3.5rem,10vw,6.5rem)] font-black leading-[0.88] tracking-tight text-gray-900 dark:text-white">
+                  LISSA
+                  <br />
+                  <span className="bg-gradient-to-r from-pink-500 via-rose-400 to-fuchsia-500 bg-clip-text text-transparent">
+                    MAE.
                   </span>
-                )
-              )}
+                </h1>
+              </motion.div>
+
+              {/* Role */}
+              <motion.p
+                variants={fadeUp}
+                className="text-base lg:text-lg text-gray-500 dark:text-white/50 font-medium mb-5"
+              >
+                Software Engineer&nbsp;
+                <span className="text-gray-300 dark:text-white/20">·</span>&nbsp;
+                Full-Stack Developer&nbsp;
+                <span className="text-gray-300 dark:text-white/20">·</span>&nbsp;
+                UI/UX Designer
+              </motion.p>
+
+              {/* Bio */}
+              <motion.p
+                variants={fadeUp}
+                className="text-gray-500 dark:text-white/40 text-base lg:text-lg max-w-lg leading-relaxed mb-10 mx-auto lg:mx-0"
+              >
+                I build scalable web applications with modern technologies.
+                Passionate about clean code, great UX, and AI-powered solutions.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div
+                variants={fadeUp}
+                className="flex flex-wrap gap-4 justify-center lg:justify-start mb-10"
+              >
+                <a
+                  href="/resume.pdf"
+                  download
+                  className="flex items-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white text-sm font-semibold hover:shadow-xl hover:shadow-pink-500/30 hover:scale-105 transition-all duration-300"
+                >
+                  <FiDownload size={15} />
+                  Download CV
+                </a>
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="flex items-center gap-2 px-7 py-3.5 rounded-full border border-gray-300 dark:border-white/15 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:border-pink-300 dark:hover:border-pink-500/30 text-sm font-semibold transition-all duration-300 hover:scale-105"
+                >
+                  Let&apos;s Talk
+                </a>
+              </motion.div>
+
+              {/* Social links */}
+              <motion.div
+                variants={fadeUp}
+                className="flex items-center gap-3 justify-center lg:justify-start"
+              >
+                <span className="text-[10px] font-mono text-gray-400 dark:text-white/25 tracking-widest uppercase">
+                  Find me on
+                </span>
+                <div className="w-10 h-px bg-gray-200 dark:bg-white/10" />
+                {[
+                  { icon: FiGithub, href: 'https://github.com', label: 'GitHub' },
+                  { icon: FiLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+                  { icon: FiMail, href: 'mailto:youremail@example.com', label: 'Email' },
+                ].map(({ icon: Icon, href, label }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target={href.startsWith('http') ? '_blank' : undefined}
+                    rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    aria-label={label}
+                    className="p-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-gray-500 dark:text-white/50 hover:border-pink-400 dark:hover:border-pink-500/40 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200"
+                  >
+                    <Icon size={16} />
+                  </a>
+                ))}
+              </motion.div>
             </motion.div>
 
-            {/* CTA */}
+            {/* Right: Image card */}
             <motion.div
-              variants={fadeUp}
-              className="flex flex-wrap gap-4 justify-center lg:justify-start"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.35, ease: 'easeOut' }}
+              className="relative flex-shrink-0 w-72 sm:w-80 lg:w-[420px]"
             >
-              <a
-                href="/resume.pdf"
-                download
-                className="flex items-center gap-2 px-7 py-3.5 rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-sm font-semibold hover:shadow-xl hover:shadow-teal-500/25 hover:scale-105 transition-all duration-300"
-              >
-                <FiDownload size={15} />
-                Download CV
-              </a>
-              <a
-                href="#contact"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="flex items-center gap-2 px-7 py-3.5 rounded-full border border-gray-300 dark:border-white/15 text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-white/30 text-sm font-semibold transition-all duration-300 hover:scale-105"
-              >
-                Let&apos;s Talk
-              </a>
-            </motion.div>
-          </motion.div>
+              {/* Glow */}
+              <div className="absolute -inset-4 bg-gradient-to-br from-pink-400/25 to-fuchsia-500/25 rounded-3xl blur-3xl" />
 
-          {/* Right: Profile image */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.75 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
-            className="relative flex-shrink-0"
-          >
-            <div
-              className="absolute -inset-6 rounded-full border border-teal-500/20 animate-spin"
-              style={{ animationDuration: '12s' }}
-            />
-            <div
-              className="absolute -inset-12 rounded-full border border-purple-500/10 animate-spin"
-              style={{ animationDuration: '20s', animationDirection: 'reverse' }}
-            />
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-teal-400/20 to-purple-500/20 blur-2xl" />
-            <motion.div
-              animate={{ y: [0, -14, 0] }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-              className="relative w-64 h-64 lg:w-150 lg:h-150"
-            >
-              <div className="w-full h-full rounded-full overflow-hidden ring-2 ring-gray-200 dark:ring-white/10">
-                <Image
-                  src="/images/profile_pic - Edited.png"
-                  alt="Lissa Mae P. Degamo"
-                  fill
-                  className="object-cover"
-                  priority
-                />
+              {/* Gradient-border card */}
+              <div className="relative p-[2px] rounded-3xl bg-gradient-to-br from-pink-500/70 via-fuchsia-500/40 to-transparent">
+                <div className="relative rounded-[22px] overflow-hidden bg-gray-200 dark:bg-[#120912]">
+                  <div className="relative w-full aspect-[3/4]">
+                    <Image
+                      src="/images/profile_pic - Edited.png"
+                      alt="Lissa Mae P. Degamo"
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                    {/* Bottom name overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 h-2/5 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+                    <div className="absolute bottom-5 left-5 right-5">
+                      <p className="text-white font-bold text-sm leading-snug">
+                        Lissa Mae P. Degamo
+                      </p>
+                      <p className="text-white/50 text-xs mt-0.5">Software Engineer</p>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {/* Floating chip: Available */}
+              <motion.div
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }}
+                className="absolute -bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#1c0f1c] border border-gray-200 dark:border-white/10 shadow-xl dark:shadow-black/50 whitespace-nowrap"
+              >
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span className="text-xs font-semibold text-gray-900 dark:text-white">Available for Work</span>
+              </motion.div>
             </motion.div>
-          </motion.div>
+
+          </div>
         </div>
 
         {/* Scroll indicator */}
@@ -326,7 +515,7 @@ export default function Home() {
           onClick={() =>
             document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
           }
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-gray-400 dark:text-white/25 hover:text-gray-600 dark:hover:text-white/50 transition-colors duration-200 cursor-pointer"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-gray-400 dark:text-white/25 hover:text-pink-500 dark:hover:text-pink-400 transition-colors duration-200 cursor-pointer"
         >
           <span className="text-[10px] tracking-widest uppercase">Scroll</span>
           <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
@@ -343,10 +532,18 @@ export default function Home() {
           subtitle="A passionate developer building meaningful digital experiences"
         />
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Bio */}
-          <motion.div variants={fadeUp} className="space-y-5">
-            <p className="text-gray-600 dark:text-white/60 text-lg leading-relaxed">
+        {/* Bento Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-auto">
+
+          {/* Bio card — spans 2 cols × 2 rows */}
+          <motion.div
+            variants={fadeUp}
+            className="col-span-2 lg:row-span-2 p-8 rounded-3xl bg-white border border-gray-200 dark:bg-white/5 dark:border-white/10 shadow-sm dark:shadow-none flex flex-col gap-5"
+          >
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-fuchsia-500 flex items-center justify-center flex-shrink-0">
+              <span className="text-white text-lg leading-none">✦</span>
+            </div>
+            <p className="text-gray-600 dark:text-white/60 text-base lg:text-lg leading-relaxed">
               I&apos;m{' '}
               <span className="text-gray-900 dark:text-white font-semibold">
                 Lissa Mae P. Degamo
@@ -355,77 +552,68 @@ export default function Home() {
               specialize in building modern, performant web applications using
               cutting-edge technologies.
             </p>
-            <p className="text-gray-600 dark:text-white/60 text-lg leading-relaxed">
+            <p className="text-gray-600 dark:text-white/60 text-base lg:text-lg leading-relaxed">
               From designing intuitive user interfaces to architecting robust backend
               systems, I bring ideas to life with clean code and thoughtful engineering.
-              I&apos;m especially excited about the intersection of AI and web development.
+              Especially excited about the intersection of AI and web development.
             </p>
-            <p className="text-gray-600 dark:text-white/60 text-lg leading-relaxed">
-              When I&apos;m not coding, I&apos;m exploring the latest in tech,
-              contributing to open-source, or refining my UI/UX design skills.
-            </p>
-            <div className="flex gap-4 pt-2">
+            <div className="flex gap-3 mt-auto pt-2">
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 dark:bg-white/5 dark:border-white/10 dark:text-white/60 dark:hover:text-white dark:hover:border-white/20 text-sm transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-pink-300 dark:bg-white/5 dark:border-white/10 dark:text-white/60 dark:hover:text-white dark:hover:border-pink-500/30 text-sm transition-all duration-200"
               >
-                <FiGithub size={15} /> GitHub
+                <FiGithub size={14} /> GitHub
               </a>
               <a
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 dark:bg-white/5 dark:border-white/10 dark:text-white/60 dark:hover:text-white dark:hover:border-white/20 text-sm transition-all duration-200"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-pink-300 dark:bg-white/5 dark:border-white/10 dark:text-white/60 dark:hover:text-white dark:hover:border-pink-500/30 text-sm transition-all duration-200"
               >
-                <FiLinkedin size={15} /> LinkedIn
+                <FiLinkedin size={14} /> LinkedIn
               </a>
             </div>
           </motion.div>
 
-          {/* Stats */}
-          <motion.div variants={fadeUp} className="grid grid-cols-2 gap-4">
-            {[
-              {
-                number: '3+',
-                label: 'Years Experience',
-                from: 'from-teal-500/20',
-                to: 'to-cyan-500/20',
-                border: 'border-teal-500/20',
-              },
-              {
-                number: '20+',
-                label: 'Projects Completed',
-                from: 'from-purple-500/20',
-                to: 'to-pink-500/20',
-                border: 'border-purple-500/20',
-              },
-              {
-                number: '10+',
-                label: 'Technologies',
-                from: 'from-blue-500/20',
-                to: 'to-indigo-500/20',
-                border: 'border-blue-500/20',
-              },
-              {
-                number: '100%',
-                label: 'Commitment',
-                from: 'from-amber-500/20',
-                to: 'to-orange-500/20',
-                border: 'border-amber-500/20',
-              },
-            ].map((stat) => (
-              <div
-                key={stat.label}
-                className={`p-6 rounded-2xl bg-gradient-to-br ${stat.from} ${stat.to} border ${stat.border}`}
-              >
-                <div className="text-3xl font-black text-gray-900 dark:text-white mb-1">
-                  {stat.number}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-white/50">{stat.label}</div>
-              </div>
-            ))}
+          {/* Stat: Years */}
+          <motion.div
+            variants={fadeUp}
+            className="p-6 rounded-3xl bg-gradient-to-br from-pink-500/10 to-rose-500/10 border border-pink-500/20 dark:border-pink-500/15 flex flex-col justify-between"
+          >
+            <div className="text-4xl font-black text-gray-900 dark:text-white">3+</div>
+            <div className="text-sm text-gray-500 dark:text-white/50 mt-2">Years Experience</div>
+          </motion.div>
+
+          {/* Stat: Projects */}
+          <motion.div
+            variants={fadeUp}
+            className="p-6 rounded-3xl bg-gradient-to-br from-fuchsia-500/10 to-pink-500/10 border border-fuchsia-500/20 dark:border-fuchsia-500/15 flex flex-col justify-between"
+          >
+            <div className="text-4xl font-black text-gray-900 dark:text-white">20+</div>
+            <div className="text-sm text-gray-500 dark:text-white/50 mt-2">Projects Completed</div>
+          </motion.div>
+
+          {/* Status: Available */}
+          <motion.div
+            variants={fadeUp}
+            className="p-6 rounded-3xl bg-gradient-to-br from-rose-500/10 to-pink-500/10 border border-rose-500/20 dark:border-rose-500/15 flex items-center gap-4"
+          >
+            <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0" />
+            <div>
+              <div className="text-sm font-bold text-gray-900 dark:text-white">Available</div>
+              <div className="text-xs text-gray-500 dark:text-white/40 mt-0.5">for opportunities</div>
+            </div>
+          </motion.div>
+
+          {/* Stat: Commitment */}
+          <motion.div
+            variants={fadeUp}
+            className="p-6 rounded-3xl bg-gradient-to-br from-pink-500/10 to-fuchsia-500/10 border border-pink-500/20 dark:border-pink-500/15 flex flex-col justify-between"
+          >
+            <div className="text-4xl font-black text-gray-900 dark:text-white">100%</div>
+            <div className="text-sm text-gray-500 dark:text-white/50 mt-2">Commitment</div>
           </motion.div>
         </div>
       </SectionWrapper>
@@ -441,32 +629,47 @@ export default function Home() {
           subtitle="Technologies I use to build great products"
         />
 
-        <motion.div
-          variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4"
-        >
-          {skills.map((skill, i) => (
-            <motion.div
-              key={skill.name}
-              variants={fadeUp}
-              custom={i}
-              whileHover={{ scale: 1.06, y: -4 }}
-              className="group flex flex-col items-center gap-3 p-6 rounded-2xl bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md dark:bg-white/5 dark:border-white/10 dark:hover:border-white/20 dark:hover:bg-white/[0.08] transition-all duration-300 cursor-default shadow-sm dark:shadow-none"
-            >
-              <skill.icon
-                size={36}
-                style={{ color: skill.color }}
-                className="group-hover:scale-110 transition-transform duration-300"
-              />
-              <span className="text-sm text-gray-600 group-hover:text-gray-900 dark:text-white/60 dark:group-hover:text-white/90 font-medium transition-colors duration-200">
-                {skill.name}
-              </span>
-              <span className="text-[10px] text-gray-400 dark:text-white/25 tracking-wide uppercase">
-                {skill.category}
-              </span>
-            </motion.div>
-          ))}
-        </motion.div>
+        {/* Marquee row 1 */}
+        <div className="relative overflow-hidden mb-4">
+          <div className="absolute left-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-r from-gray-50 dark:from-[#080508] to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-l from-gray-50 dark:from-[#080508] to-transparent pointer-events-none" />
+          <div className="flex animate-marquee gap-4">
+            {[...skills, ...skills].map((skill, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 flex flex-col items-center gap-2.5 px-6 py-5 rounded-2xl bg-white border border-gray-200 dark:bg-white/5 dark:border-white/10 w-32 hover:border-pink-300 dark:hover:border-pink-500/30 hover:shadow-md dark:hover:shadow-none transition-all duration-200 group"
+              >
+                <skill.icon
+                  size={30}
+                  style={{ color: skill.color }}
+                  className="group-hover:scale-110 transition-transform duration-200"
+                />
+                <span className="text-xs text-gray-600 dark:text-white/60 font-medium text-center">{skill.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Marquee row 2 (reversed) */}
+        <div className="relative overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-r from-gray-50 dark:from-[#080508] to-transparent pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-l from-gray-50 dark:from-[#080508] to-transparent pointer-events-none" />
+          <div className="flex animate-marquee-reverse gap-4">
+            {[...skills.slice().reverse(), ...skills.slice().reverse()].map((skill, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 flex flex-col items-center gap-2.5 px-6 py-5 rounded-2xl bg-white border border-gray-200 dark:bg-white/5 dark:border-white/10 w-32 hover:border-pink-300 dark:hover:border-pink-500/30 hover:shadow-md dark:hover:shadow-none transition-all duration-200 group"
+              >
+                <skill.icon
+                  size={30}
+                  style={{ color: skill.color }}
+                  className="group-hover:scale-110 transition-transform duration-200"
+                />
+                <span className="text-xs text-gray-600 dark:text-white/60 font-medium text-center">{skill.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </SectionWrapper>
 
       {/* ════════════════════════════════════════ PROJECTS */}
@@ -477,62 +680,9 @@ export default function Home() {
           subtitle="A selection of projects I've built — update these with your real work!"
         />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project, i) => (
-            <motion.div
-              key={project.title}
-              variants={fadeUp}
-              custom={i}
-              whileHover={{ y: -8 }}
-              className={`group flex flex-col rounded-2xl overflow-hidden bg-white border border-gray-200 ${project.hoverBorder} dark:bg-white/5 dark:border-white/10 transition-all duration-500 shadow-sm dark:shadow-none`}
-            >
-              {/* Card header */}
-              <div
-                className={`h-44 bg-gradient-to-br ${project.gradient} relative flex items-center justify-center overflow-hidden`}
-              >
-                <span className="text-7xl font-black text-gray-200 dark:text-white/10 select-none">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
-                  <a
-                    href={project.github}
-                    className="p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all duration-200"
-                    aria-label="GitHub"
-                  >
-                    <FiGithub size={18} />
-                  </a>
-                  <a
-                    href={project.link}
-                    className="p-3 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all duration-200"
-                    aria-label="Live demo"
-                  >
-                    <FiExternalLink size={18} />
-                  </a>
-                </div>
-              </div>
-
-              {/* Card body */}
-              <div className="flex flex-col flex-1 p-6">
-                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-200">
-                  {project.title}
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-white/50 leading-relaxed flex-1 mb-4">
-                  {project.description}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((t) => (
-                    <span
-                      key={t}
-                      className="px-2.5 py-1 text-[11px] font-mono bg-gray-100 border border-gray-200 text-gray-500 dark:bg-white/5 dark:border-white/10 dark:text-white/40 rounded-md"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        <motion.div variants={fadeUp}>
+          <ProjectsCarousel />
+        </motion.div>
       </SectionWrapper>
 
       {/* ════════════════════════════════════════ CONTACT */}
@@ -540,60 +690,67 @@ export default function Home() {
         id="contact"
         className="border-t border-gray-200 dark:border-white/5"
       >
-        <div className="max-w-2xl mx-auto text-center">
-          <motion.span
-            variants={fadeUp}
-            className="inline-block text-xs font-bold tracking-widest text-teal-600 dark:text-teal-400 uppercase mb-3"
-          >
-            Get In Touch
-          </motion.span>
-          <motion.h2
-            variants={fadeUp}
-            className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6"
-          >
-            Let&apos;s Work Together
-          </motion.h2>
-          <motion.p
-            variants={fadeUp}
-            className="text-gray-500 dark:text-white/40 text-lg mb-10 leading-relaxed"
-          >
-            I&apos;m currently open to new opportunities. Whether you have a project in
-            mind, a question, or just want to say hi — my inbox is always open!
-          </motion.p>
+        <motion.div variants={fadeUp} className="relative max-w-3xl mx-auto rounded-3xl overflow-hidden">
+          {/* Card background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-fuchsia-500/8 to-rose-500/10 dark:from-pink-500/15 dark:via-fuchsia-500/12 dark:to-rose-500/15 border border-pink-500/20 dark:border-pink-500/15 rounded-3xl" />
+          <div className="absolute top-0 right-0 w-72 h-72 bg-fuchsia-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-56 h-56 bg-pink-500/15 rounded-full blur-3xl pointer-events-none" />
 
-          <motion.a
-            variants={fadeUp}
-            href="mailto:youremail@example.com"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-teal-500 to-purple-600 text-white font-semibold text-lg hover:shadow-2xl hover:shadow-teal-500/25 hover:scale-105 transition-all duration-300"
-          >
-            <FiMail size={20} />
-            Say Hello
-          </motion.a>
+          <div className="relative p-12 text-center">
+            <motion.span
+              variants={fadeUp}
+              className="inline-block text-xs font-bold tracking-widest text-pink-500 dark:text-pink-400 uppercase mb-4"
+            >
+              Get In Touch
+            </motion.span>
+            <motion.h2
+              variants={fadeUp}
+              className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6"
+            >
+              Let&apos;s Work Together
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-gray-500 dark:text-white/50 text-lg mb-10 leading-relaxed max-w-lg mx-auto"
+            >
+              I&apos;m currently open to new opportunities. Whether you have a project in
+              mind, a question, or just want to say hi — my inbox is always open!
+            </motion.p>
 
-          {/* Social links */}
-          <motion.div
-            variants={fadeUp}
-            className="flex justify-center gap-4 mt-10"
-          >
-            {[
-              { icon: FiGithub, href: 'https://github.com', label: 'GitHub' },
-              { icon: FiLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-              { icon: FiMail, href: 'mailto:youremail@example.com', label: 'Email' },
-            ].map(({ icon: Icon, href, label }) => (
-              <a
-                key={label}
-                href={href}
-                target={href.startsWith('http') ? '_blank' : undefined}
-                rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                aria-label={label}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 dark:bg-white/5 dark:border-white/10 dark:text-white/50 dark:hover:text-white dark:hover:border-white/25 text-sm transition-all duration-200"
-              >
-                <Icon size={15} />
-                {label}
-              </a>
-            ))}
-          </motion.div>
-        </div>
+            <motion.a
+              variants={fadeUp}
+              href="mailto:youremail@example.com"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white font-semibold text-lg hover:shadow-2xl hover:shadow-pink-500/30 hover:scale-105 transition-all duration-300"
+            >
+              <FiMail size={20} />
+              Say Hello
+            </motion.a>
+
+            {/* Social links */}
+            <motion.div
+              variants={fadeUp}
+              className="flex justify-center gap-4 mt-10"
+            >
+              {[
+                { icon: FiGithub, href: 'https://github.com', label: 'GitHub' },
+                { icon: FiLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+                { icon: FiMail, href: 'mailto:youremail@example.com', label: 'Email' },
+              ].map(({ icon: Icon, href, label }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target={href.startsWith('http') ? '_blank' : undefined}
+                  rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  aria-label={label}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/70 border border-gray-200 text-gray-600 hover:text-pink-600 hover:border-pink-300 dark:bg-white/5 dark:border-white/10 dark:text-white/50 dark:hover:text-pink-400 dark:hover:border-pink-500/30 text-sm transition-all duration-200 backdrop-blur-sm"
+                >
+                  <Icon size={15} />
+                  {label}
+                </a>
+              ))}
+            </motion.div>
+          </div>
+        </motion.div>
       </SectionWrapper>
 
       {/* ════════════════════════════════════════ FOOTER */}
