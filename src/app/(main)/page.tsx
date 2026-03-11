@@ -128,34 +128,47 @@ const skills = [
 
 const projects = [
   {
-    title: 'AI-Powered RAG System',
+    title: 'EmpowerLawPH – Legal Research Platform',
     description:
-      'An intelligent retrieval-augmented generation system that enhances LLM responses with domain-specific knowledge using vector embeddings.',
-    tech: ['Next.js', 'Python', 'PostgreSQL', 'AI/RAG'],
+      'A full-stack legal research platform built with Next.js and Django, designed to streamline access to Philippine case law, statutes, and rules. Features advanced search, structured legal content rendering, and a modern Tailwind-powered UI for efficient legal research workflows.',
+    tech: ['Next.js', 'Django', 'Python', 'Tailwind CSS'],
     gradient: 'from-pink-500/20 to-rose-500/20',
     accentColor: 'text-pink-500',
+    image: '/images/empowerlawph.png',
     github: '#',
-    link: '#',
+    link: 'https://staging02.innodata.com/empowerlawph/home',
+  },
+  // {
+  //   title: 'AI-Powered RAG System',
+  //   description:
+  //     'An intelligent retrieval-augmented generation system that enhances LLM responses with domain-specific knowledge using vector embeddings.',
+  //   tech: ['Next.js', 'Python', 'PostgreSQL', 'AI/RAG'],
+  //   gradient: 'from-pink-500/20 to-rose-500/20',
+  //   accentColor: 'text-pink-500',
+  //   github: '#',
+  //   link: '#',
+  // },
+  {
+    title: 'Hapi Humanist – Client Website',
+    description:
+      'A live production website developed for Hapi Humanist using WordPress and PHP, deployed on GoDaddy hosting. Designed and customized to support advocacy campaigns, organizational updates, and public engagement with a scalable MySQL-backed content management system.',
+    tech: ['WordPress', 'PHP', 'MySQL', 'GoDaddy Hosting'],
+    gradient: 'from-purple-500/20 to-indigo-500/20',
+    accentColor: 'text-purple-500',
+    image: '/images/hapi.jpg',
+    github: '#',
+    link: 'https://hapihumanist.org/',
   },
   {
-    title: 'Full-Stack E-Commerce',
+  title: 'PeraLog - Budget Management App',
     description:
-      'A modern e-commerce platform with real-time inventory management, payment processing, and an intuitive admin dashboard.',
-    tech: ['Next.js', 'Django', 'TypeScript', 'Redux'],
-    gradient: 'from-fuchsia-500/20 to-pink-500/20',
-    accentColor: 'text-fuchsia-500',
-    github: '#',
-    link: '#',
-  },
-  {
-    title: 'Task Management App',
-    description:
-      'A collaborative project management tool with real-time updates, role-based access, and rich analytics dashboards.',
-    tech: ['Next.js', 'Django', 'PostgreSQL', 'TypeScript'],
-    gradient: 'from-rose-500/20 to-fuchsia-500/20',
-    accentColor: 'text-rose-500',
-    github: '#',
-    link: '#',
+      'A full-stack personal finance management system with secure authentication, JWT-based sessions, and PostgreSQL database integration. Users can track income, expenses, and manage budgets with a clean and responsive UI deployed on Vercel.',
+    tech: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL (Neon)', 'JWT'],
+    gradient: 'from-emerald-500/20 to-teal-500/20',
+    accentColor: 'text-emerald-500',
+    image: '/images/logo_peralog.png',
+    github: 'https://github.com/Jeonsamae/budget-app',
+    link: 'https://budget-app-lissadev.vercel.app',
   },
 ];
 
@@ -175,7 +188,7 @@ function ProjectsCarousel() {
   );
 
   const prev = () => goTo((current - 1 + projects.length) % projects.length);
-  const next = () => goTo((current + 1) % projects.length);
+  const next = () => goTo((current + 1) % projects.length); 
 
   const slideVariants = {
     enter: (d: number) => ({ x: d > 0 ? '55%' : '-55%', opacity: 0, scale: 0.96 }),
@@ -203,9 +216,23 @@ function ProjectsCarousel() {
 
               {/* Visual panel */}
               <div className={`lg:w-5/12 bg-gradient-to-br ${project.gradient} relative flex items-center justify-center overflow-hidden min-h-[220px] lg:min-h-0`}>
-                <span className="text-[clamp(6rem,14vw,11rem)] font-black text-gray-900/[0.06] dark:text-white/[0.05] select-none leading-none">
+                {/* <span className="text-[clamp(6rem,14vw,11rem)] font-black text-gray-900/[0.06] dark:text-white/[0.05] select-none leading-none">
                   {String(current + 1).padStart(2, '0')}
-                </span>
+                </span> */}
+                <div className="relative w-full h-full">
+                  {project.image ? (
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span className="text-[clamp(6rem,14vw,11rem)] font-black text-gray-900/[0.06] dark:text-white/[0.05] select-none leading-none">
+                      {String(current + 1).padStart(2, '0')}
+                    </span>
+                  )}
+                </div>
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-5 backdrop-blur-sm">
                   <a
@@ -582,7 +609,7 @@ export default function Home() {
             variants={fadeUp}
             className="p-6 rounded-3xl bg-gradient-to-br from-pink-500/10 to-rose-500/10 border border-pink-500/20 dark:border-pink-500/15 flex flex-col justify-between"
           >
-            <div className="text-4xl font-black text-gray-900 dark:text-white">3+</div>
+            <div className="text-4xl font-black text-gray-900 dark:text-white">1+</div>
             <div className="text-sm text-gray-500 dark:text-white/50 mt-2">Years Experience</div>
           </motion.div>
 
@@ -591,7 +618,7 @@ export default function Home() {
             variants={fadeUp}
             className="p-6 rounded-3xl bg-gradient-to-br from-fuchsia-500/10 to-pink-500/10 border border-fuchsia-500/20 dark:border-fuchsia-500/15 flex flex-col justify-between"
           >
-            <div className="text-4xl font-black text-gray-900 dark:text-white">20+</div>
+            <div className="text-4xl font-black text-gray-900 dark:text-white">10+</div>
             <div className="text-sm text-gray-500 dark:text-white/50 mt-2">Projects Completed</div>
           </motion.div>
 
