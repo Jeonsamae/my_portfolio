@@ -24,6 +24,12 @@ import {
   FiArrowDown,
   FiChevronLeft,
   FiChevronRight,
+  FiMonitor,
+  FiServer,
+  FiDatabase,
+  FiLayers,
+  FiZap,
+  FiCode,
 } from 'react-icons/fi';
 
 // ─── Animation Variants ──────────────────────────────────────────────────────
@@ -126,6 +132,57 @@ const skills = [
   { icon: SiDocker, name: 'Docker', color: '#2496ED', category: 'Tools' },
 ];
 
+const services = [
+  {
+    icon: FiMonitor,
+    title: 'Frontend Development',
+    description: 'Building responsive, pixel-perfect UIs with React, Next.js, and Tailwind CSS.',
+    gradient: 'from-pink-500/10 to-rose-500/10',
+    border: 'border-pink-500/20',
+    iconColor: 'text-pink-500',
+  },
+  {
+    icon: FiServer,
+    title: 'Backend Development',
+    description: 'Designing robust REST APIs and server-side systems with Django and Python.',
+    gradient: 'from-fuchsia-500/10 to-purple-500/10',
+    border: 'border-fuchsia-500/20',
+    iconColor: 'text-fuchsia-500',
+  },
+  {
+    icon: FiDatabase,
+    title: 'Database Design',
+    description: 'Architecting scalable, efficient database schemas with PostgreSQL and Prisma.',
+    gradient: 'from-violet-500/10 to-indigo-500/10',
+    border: 'border-violet-500/20',
+    iconColor: 'text-violet-500',
+  },
+  {
+    icon: FiLayers,
+    title: 'Full-Stack Integration',
+    description: 'End-to-end web application development that connects every layer seamlessly.',
+    gradient: 'from-rose-500/10 to-pink-500/10',
+    border: 'border-rose-500/20',
+    iconColor: 'text-rose-500',
+  },
+  {
+    icon: FiCode,
+    title: 'UI/UX Design',
+    description: 'Crafting intuitive, beautiful interfaces that deliver delightful user experiences.',
+    gradient: 'from-pink-500/10 to-fuchsia-500/10',
+    border: 'border-pink-500/20',
+    iconColor: 'text-pink-500',
+  },
+  {
+    icon: FiZap,
+    title: 'Performance Optimization',
+    description: 'Fine-tuning web apps for speed, scalability, and SEO best practices.',
+    gradient: 'from-amber-500/10 to-orange-500/10',
+    border: 'border-amber-500/20',
+    iconColor: 'text-amber-500',
+  },
+];
+
 const projects = [
   {
     title: 'EmpowerLawPH – Legal Research Platform',
@@ -160,7 +217,7 @@ const projects = [
     link: 'https://hapihumanist.org/',
   },
   {
-  title: 'PeraLog - Budget Management App',
+    title: 'PeraLog - Budget Management App',
     description:
       'A full-stack personal finance management system with secure authentication, JWT-based sessions, and PostgreSQL database integration. Users can track income, expenses, and manage budgets with a clean and responsive UI deployed on Vercel.',
     tech: ['Next.js', 'TypeScript', 'Prisma', 'PostgreSQL (Neon)', 'JWT'],
@@ -168,7 +225,18 @@ const projects = [
     accentColor: 'text-emerald-500',
     image: '/images/logo_peralog.png',
     github: 'https://github.com/Jeonsamae/budget-app',
-    link: 'https://budget-app-lissadev.vercel.app',
+    link: 'https://peralog-lissadev.vercel.app',
+  },
+  {
+    title: 'Car Rental App',
+    description:
+      'A modern car rental web application that allows users to browse available vehicles, make reservations, and manage bookings. Features an intuitive search and filter system, booking management, and a clean responsive UI.',
+    tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'PostgreSQL'],
+    gradient: 'from-sky-500/20 to-blue-500/20',
+    accentColor: 'text-sky-500',
+    image: '/images/car-rental-pic.png',
+    github: 'https://github.com/Jeonsamae/car-rental-app',
+    link: 'https://car-rental-app-lissa-dev.vercel.app/',
   },
 ];
 
@@ -359,15 +427,6 @@ export default function Home() {
         <div className="absolute inset-0">
           <div className="absolute -top-20 right-0 w-[900px] h-[900px] bg-pink-400/8 dark:bg-pink-500/10 rounded-full blur-[140px]" />
           <div className="absolute bottom-0 -left-20 w-[700px] h-[700px] bg-fuchsia-400/8 dark:bg-fuchsia-500/8 rounded-full blur-[120px]" />
-          {/* Light mode grid */}
-          <div
-            className="absolute inset-0 opacity-[0.04] dark:hidden"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(0,0,0,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,1) 1px, transparent 1px)',
-              backgroundSize: '64px 64px',
-            }}
-          />
           {/* Dark mode grid */}
           <div
             className="absolute inset-0 opacity-[0.025] hidden dark:block"
@@ -712,72 +771,120 @@ export default function Home() {
         </motion.div>
       </SectionWrapper>
 
+      {/* ════════════════════════════════════════ SERVICES */}
+      <SectionWrapper
+        id="services"
+        className="border-t border-gray-200 dark:border-white/5"
+      >
+        <SectionTitle
+          label="What I Do"
+          title="Services Offered"
+          subtitle="From idea to deployment — I handle it all"
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {services.map((service, i) => (
+            <motion.div
+              key={service.title}
+              variants={fadeUp}
+              custom={i}
+              className={`p-7 rounded-3xl bg-gradient-to-br ${service.gradient} border ${service.border} dark:border-white/10 group hover:shadow-lg dark:hover:shadow-none hover:-translate-y-1 transition-all duration-300`}
+            >
+              <div className={`w-12 h-12 rounded-2xl bg-white dark:bg-white/5 border border-gray-100 dark:border-white/10 flex items-center justify-center mb-5 ${service.iconColor} group-hover:scale-110 transition-transform duration-200`}>
+                <service.icon size={22} />
+              </div>
+              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">{service.title}</h3>
+              <p className="text-gray-500 dark:text-white/50 text-sm leading-relaxed">{service.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </SectionWrapper>
+
       {/* ════════════════════════════════════════ CONTACT */}
       <SectionWrapper
         id="contact"
         className="border-t border-gray-200 dark:border-white/5"
       >
-        <motion.div variants={fadeUp} className="relative max-w-3xl mx-auto rounded-3xl overflow-hidden">
-          {/* Card background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-fuchsia-500/8 to-rose-500/10 dark:from-pink-500/15 dark:via-fuchsia-500/12 dark:to-rose-500/15 border border-pink-500/20 dark:border-pink-500/15 rounded-3xl" />
-          <div className="absolute top-0 right-0 w-72 h-72 bg-fuchsia-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-56 h-56 bg-pink-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="grid lg:grid-cols-2 gap-16 items-start">
 
-          <div className="relative p-12 text-center">
-            <motion.span
-              variants={fadeUp}
-              className="inline-block text-xs font-bold tracking-widest text-pink-500 dark:text-pink-400 uppercase mb-4"
-            >
+          {/* Left — heading + CTA */}
+          <motion.div variants={fadeUp}>
+            <span className="inline-block text-xs font-bold tracking-widest text-pink-500 dark:text-pink-400 uppercase mb-4">
               Get In Touch
-            </motion.span>
-            <motion.h2
-              variants={fadeUp}
-              className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6"
-            >
-              Let&apos;s Work Together
-            </motion.h2>
-            <motion.p
-              variants={fadeUp}
-              className="text-gray-500 dark:text-white/50 text-lg mb-10 leading-relaxed max-w-lg mx-auto"
-            >
-              I&apos;m currently open to new opportunities. Whether you have a project in
-              mind, a question, or just want to say hi — my inbox is always open!
-            </motion.p>
-
-            <motion.a
-              variants={fadeUp}
+            </span>
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+              Let&apos;s Build<br />
+              <span className="bg-gradient-to-r from-pink-500 to-fuchsia-500 bg-clip-text text-transparent">
+                Something Great
+              </span>
+            </h2>
+            <p className="text-gray-500 dark:text-white/50 text-lg leading-relaxed mb-10">
+              Open to new opportunities, collaborations, and freelance projects.
+              Drop me a message and let&apos;s create something amazing together.
+            </p>
+            <a
               href="mailto:youremail@example.com"
-              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white font-semibold text-lg hover:shadow-2xl hover:shadow-pink-500/30 hover:scale-105 transition-all duration-300"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-pink-500 to-fuchsia-500 text-white font-semibold text-base hover:shadow-xl hover:shadow-pink-500/30 hover:scale-105 transition-all duration-300"
             >
-              <FiMail size={20} />
-              Say Hello
-            </motion.a>
+              <FiMail size={18} />
+              Send a Message
+            </a>
+          </motion.div>
 
-            {/* Social links */}
-            <motion.div
-              variants={fadeUp}
-              className="flex justify-center gap-4 mt-10"
-            >
-              {[
-                { icon: FiGithub, href: 'https://github.com', label: 'GitHub' },
-                { icon: FiLinkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-                { icon: FiMail, href: 'mailto:youremail@example.com', label: 'Email' },
-              ].map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target={href.startsWith('http') ? '_blank' : undefined}
-                  rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  aria-label={label}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/70 border border-gray-200 text-gray-600 hover:text-pink-600 hover:border-pink-300 dark:bg-white/5 dark:border-white/10 dark:text-white/50 dark:hover:text-pink-400 dark:hover:border-pink-500/30 text-sm transition-all duration-200 backdrop-blur-sm"
-                >
-                  <Icon size={15} />
-                  {label}
-                </a>
-              ))}
-            </motion.div>
-          </div>
-        </motion.div>
+          {/* Right — contact method cards */}
+          <motion.div variants={fadeUp} className="flex flex-col gap-4">
+            {[
+              {
+                icon: FiMail,
+                label: 'Email',
+                value: 'youremail@example.com',
+                href: 'mailto:youremail@example.com',
+                desc: 'Best way to reach me',
+              },
+              {
+                icon: FiGithub,
+                label: 'GitHub',
+                value: 'github.com/yourusername',
+                href: 'https://github.com',
+                desc: 'Check out my code',
+              },
+              {
+                icon: FiLinkedin,
+                label: 'LinkedIn',
+                value: 'linkedin.com/in/yourusername',
+                href: 'https://linkedin.com',
+                desc: 'Connect professionally',
+              },
+            ].map(({ icon: Icon, label, value, href, desc }) => (
+              <a
+                key={label}
+                href={href}
+                target={href.startsWith('http') ? '_blank' : undefined}
+                rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                className="group flex items-center gap-5 p-6 rounded-2xl bg-white border border-gray-200 dark:bg-white/[0.03] dark:border-white/10 hover:border-pink-300 dark:hover:border-pink-500/30 hover:shadow-md dark:hover:shadow-none transition-all duration-200"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-500/10 to-fuchsia-500/10 border border-pink-500/20 flex items-center justify-center flex-shrink-0 text-pink-500 group-hover:scale-110 transition-transform duration-200">
+                  <Icon size={20} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[11px] text-gray-400 dark:text-white/30 font-medium mb-0.5">{desc}</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">{label}</div>
+                  <div className="text-xs text-gray-400 dark:text-white/40 truncate">{value}</div>
+                </div>
+                <FiExternalLink size={16} className="text-gray-300 dark:text-white/20 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors flex-shrink-0" />
+              </a>
+            ))}
+
+            {/* Availability badge */}
+            <div className="flex items-center gap-4 p-5 rounded-2xl bg-gradient-to-br from-green-500/5 to-emerald-500/5 border border-green-500/20 dark:border-green-500/15">
+              <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0" />
+              <div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">Available for Work</div>
+                <div className="text-xs text-gray-500 dark:text-white/40 mt-0.5">Open to full-time, part-time &amp; freelance</div>
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
       </SectionWrapper>
 
       {/* ════════════════════════════════════════ FOOTER */}
