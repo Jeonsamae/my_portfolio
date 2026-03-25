@@ -128,6 +128,17 @@ export const projects = [
     github: 'https://github.com/Jeonsamae/car-rental-app',
     link: 'https://car-rental-app-lissa-dev.vercel.app/',
   },
+  {
+    title: 'To-Do List App',
+    description:
+      'A simple and clean task management web application built with Python Django and styled with Tailwind CSS. Users can create, update, and delete tasks in a monolithic full-stack setup, deployed on Render.',
+    tech: ['Python', 'Django', 'Tailwind CSS'],
+    gradient: 'from-amber-500/20 to-orange-500/20',
+    accentColor: 'text-amber-500',
+    image: '/images/to-do-list-image.png',
+    github: '#',
+    link: 'https://todo-list-app-uyc4.onrender.com/',
+  },
 ];
 
 export const experiences = [
